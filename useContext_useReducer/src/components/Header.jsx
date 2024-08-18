@@ -1,15 +1,18 @@
 import React from "react";
 import CartModal from "./CartModal";
 import { useRef } from "react";
+import { UserContext } from "../store/shopping-context";
+import { useContext } from "react";
 
-function Header({ cart, updateQuantity }) {
+function Header() {
+  const { items } = useContext(UserContext);
   const dialog = useRef();
 
   function handleOpenCart() {
     dialog.current.showModal();
   }
 
-  let cartQuantity = cart.items.length;
+  let cartQuantity = items.length;
 
   let modalAction = <button>Close</button>;
   if (cartQuantity > 0) {
@@ -23,13 +26,7 @@ function Header({ cart, updateQuantity }) {
 
   return (
     <>
-      <CartModal
-        ref={dialog}
-        title="Your Cart"
-        action={modalAction}
-        cartItems={cart.items}
-        quantity={updateQuantity}
-      />
+      <CartModal ref={dialog} title="Your Cart" action={modalAction} />
       <header id="main-header">
         <div id="main-title">
           <img src="/logo.png" alt="logo image" />

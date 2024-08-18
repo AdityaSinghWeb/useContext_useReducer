@@ -10,7 +10,7 @@ export const Dummy_Products = [
     id: "p1",
     image: mochaOvercoat,
     title: "Majestic Vintage Mocha Overcoat",
-    price: 129.99,
+    price: 128.91,
     description:
       "Channel timeless sophistication with this stunning mocha overcoat. Crafted for the discerning gentleman who appreciates the fine blend of vintage charm and modern elegance.",
   },

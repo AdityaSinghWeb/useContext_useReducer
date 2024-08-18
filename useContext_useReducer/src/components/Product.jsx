@@ -1,6 +1,9 @@
 import React from "react";
+import { UserContext } from "../store/shopping-context";
+import { useContext } from "react";
 
-function Product({ id, image, title, price, description, onAdd }) {
+function Product({ id, image, title, price, description }) {
+  const { addToCart } = useContext(UserContext);
   return (
     <article className="product">
       <img src={image} alt={title} />
@@ -9,7 +12,9 @@ function Product({ id, image, title, price, description, onAdd }) {
         <p className="product-price">${price}</p>
         <p>{description}</p>
       </div>
-      <p className="product-actions"><button onClick={()=>onAdd(id)}>Add to Cart</button></p>
+      <p className="product-actions">
+        <button onClick={() => addToCart(id)}>Add to Cart</button>
+      </p>
     </article>
   );
 }

@@ -1,6 +1,10 @@
 import React from "react";
+import { UserContext } from "../store/shopping-context";
+import { useContext } from "react";
 
-function Cart({ items, handleQuantity }) {
+function Cart() {
+  const { items, updateQuantity } = useContext(UserContext);
+
   let totalPrice = items.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
@@ -20,9 +24,21 @@ function Cart({ items, handleQuantity }) {
                   <span>({formattedPrice})</span>
                 </div>
                 <div className="cart-item-actions">
-                  <button onClick={()=>{handleQuantity(item.id, -1)}}>-</button>
+                  <button
+                    onClick={() => {
+                      updateQuantity(item.id, -1);
+                    }}
+                  >
+                    -
+                  </button>
                   <span>{item.quantity}</span>
-                  <button onClick={()=>{handleQuantity(item.id, +1)}}>+</button>
+                  <button
+                    onClick={() => {
+                      updateQuantity(item.id, +1);
+                    }}
+                  >
+                    +
+                  </button>
                 </div>
               </li>
             );
