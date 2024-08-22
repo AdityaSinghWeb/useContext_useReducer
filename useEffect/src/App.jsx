@@ -69,7 +69,7 @@ function App() {
 
   return (
     <>
-      <Modal isOpen={modalOpen}>
+      <Modal isOpen={modalOpen} close={handleCloseModal}>
         <ConfirmDelete onClose={handleCloseModal} onConfirm={handleDelete} />
       </Modal>
       <header>
