@@ -3,27 +3,51 @@ import ConfirmDelete from "./components/ConfirmDelete";
 import Places from "./components/Places";
 import { AVAILABLE_PLACES } from "./imageData";
 import Modal from "./components/Modal";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
+import { sortPlacesByDistance } from "./loc";
+
+const storedIds = JSON.parse(localStorage.getItem("selectedPlaces")) || [];
+const storedPlaces = storedIds.map((id) =>
+  AVAILABLE_PLACES.find((place) => place.id === id)
+);
 
 function App() {
-  const [pickedPlaces, setPickedPlaces] = useState([]);
-  const modal = useRef();
+  const [pickedPlaces, setPickedPlaces] = useState(storedPlaces);
+  const [availablePlaces, setAvailablePlaces] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false)
   const selectedPlace = useRef();
 
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      let sortedPlaces = sortPlacesByDistance(
+        AVAILABLE_PLACES,
+        position.coords.latitude,
+        position.coords.longitude
+      );
+      setAvailablePlaces(sortedPlaces);
+    });
+  }, []);
+
   function handleOpenModal(id) {
-    modal.current.open();
+    setModalOpen(true)
     selectedPlace.current = id;
   }
 
   function handleCloseModal() {
-    modal.current.close();
+    setModalOpen(false)
   }
 
   function handleDelete() {
     setPickedPlaces((prevPickedPlaces) =>
       prevPickedPlaces.filter((place) => place.id !== selectedPlace.current)
     );
-    modal.current.close();
+    setModalOpen(false)
+
+    const storedIds = JSON.parse(localStorage.getItem("selectedPlaces")) || [];
+    localStorage.setItem(
+      "selectedPlaces",
+      JSON.stringify(storedIds.filter((id) => id !== selectedPlace.current))
+    );
   }
 
   function handleSelectPlace(id) {
@@ -34,11 +58,18 @@ function App() {
       let place = AVAILABLE_PLACES.find((place) => place.id === id);
       return [place, ...prevPickedPlaces];
     });
+    const storedIds = JSON.parse(localStorage.getItem("selectedPlaces")) || [];
+    if (storedIds.indexOf(id) === -1) {
+      localStorage.setItem(
+        "selectedPlaces",
+        JSON.stringify([id, ...storedIds])
+      );
+    }
   }
 
   return (
     <>
-      <Modal ref={modal}>
+      <Modal isOpen={modalOpen}>
         <ConfirmDelete onClose={handleCloseModal} onConfirm={handleDelete} />
       </Modal>
       <header>
@@ -58,7 +89,8 @@ function App() {
         />
         <Places
           title="Available Places"
-          place={AVAILABLE_PLACES}
+          place={availablePlaces}
+          fallbackText="Sorting places by distance..."
           onSelectPlace={handleSelectPlace}
         />
       </main>
