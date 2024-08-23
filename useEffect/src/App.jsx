@@ -3,7 +3,7 @@ import ConfirmDelete from "./components/ConfirmDelete";
 import Places from "./components/Places";
 import { AVAILABLE_PLACES } from "./imageData";
 import Modal from "./components/Modal";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { sortPlacesByDistance } from "./loc";
 
 const storedIds = JSON.parse(localStorage.getItem("selectedPlaces")) || [];
@@ -14,7 +14,7 @@ const storedPlaces = storedIds.map((id) =>
 function App() {
   const [pickedPlaces, setPickedPlaces] = useState(storedPlaces);
   const [availablePlaces, setAvailablePlaces] = useState([]);
-  const [modalOpen, setModalOpen] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false);
   const selectedPlace = useRef();
 
   useEffect(() => {
@@ -29,26 +29,26 @@ function App() {
   }, []);
 
   function handleOpenModal(id) {
-    setModalOpen(true)
+    setModalOpen(true);
     selectedPlace.current = id;
   }
 
   function handleCloseModal() {
-    setModalOpen(false)
+    setModalOpen(false);
   }
 
-  function handleDelete() {
+  const handleDelete = useCallback(() => {
     setPickedPlaces((prevPickedPlaces) =>
       prevPickedPlaces.filter((place) => place.id !== selectedPlace.current)
     );
-    setModalOpen(false)
+    setModalOpen(false);
 
     const storedIds = JSON.parse(localStorage.getItem("selectedPlaces")) || [];
     localStorage.setItem(
       "selectedPlaces",
       JSON.stringify(storedIds.filter((id) => id !== selectedPlace.current))
     );
-  }
+  }, []);
 
   function handleSelectPlace(id) {
     setPickedPlaces((prevPickedPlaces) => {
